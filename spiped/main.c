@@ -70,7 +70,8 @@ main(int argc, char * argv[])
 	int opt_F = 0;
 	int opt_j = 0;
 	const char * opt_k = NULL;
-	intmax_t opt_n = 0;
+	intmax_t opt_n;
+	int opt_n_set = 0;
 	double opt_o = 0.0;
 	char * opt_p = NULL;
 	double opt_r = 0.0;
@@ -134,16 +135,15 @@ main(int argc, char * argv[])
 			opt_k = optarg;
 			break;
 		GETOPT_OPTARG("-n"):
-			if (opt_n != 0)
+			if (opt_n_set)
 				usage();
+			opt_n_set = 1;
 			if ((opt_n = strtoimax(optarg, NULL, 0)) == 0) {
 				warn0("Invalid option: -n %s", optarg);
 				exit(1);
 			}
-			if ((opt_n <= 0) || (opt_n > 500)) {
-				warn0("The parameter to -n must be between 1 and 500\n");
-				exit(1);
-			}
+			if (opt_n == 0)
+				opt_n = SIZE_MAX;
 			break;
 		GETOPT_OPTARG("-o"):
 			if (opt_o != 0.0)
@@ -207,7 +207,7 @@ main(int argc, char * argv[])
 	(void)argv; /* argv is not used beyond this point. */
 
 	/* Set defaults. */
-	if (opt_n == 0)
+	if (!opt_n_set)
 		opt_n = 100;
 	if (opt_o == 0.0)
 		opt_o = 5.0;
@@ -229,6 +229,14 @@ main(int argc, char * argv[])
 		usage();
 	if (opt_t == NULL)
 		usage();
+
+	/*
+	 * A limit of SIZE_MAX connections is equivalent to any larger limit;
+	 * we'll be unable to allocate memory for socket bookkeeping before we
+	 * reach either.
+	 */
+	if (opt_n > SIZE_MAX)
+		opt_n = SIZE_MAX;
 
 	/* Figure out where our pid should be written. */
 	if (opt_p == NULL) {
