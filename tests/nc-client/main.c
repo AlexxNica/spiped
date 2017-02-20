@@ -29,6 +29,7 @@ send_input(void * cookie)
 
 	/* Read data from stdin. */
 	if ((send->nchars = getline(&send->buffer, &len, stdin)) != -1) {
+		warn0("sending %zu chars", send->nchars);
 		/* Send data to server. */
 		if ((send->write_cookie = network_write(send->socket,
 		    (uint8_t *)send->buffer, (size_t)send->nchars,
