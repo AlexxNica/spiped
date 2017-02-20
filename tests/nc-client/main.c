@@ -64,9 +64,13 @@ callback_wrote(void * cookie, ssize_t lenwrit)
 	/* We are no longer writing. */
 	send->write_cookie = NULL;
 
-	/* Check that we wrote all our data. */
-	if (lenwrit != send->nchars) {
-		warn0("Mismatch between data sent and data requested to send");
+	/* Check for failure cases. */
+	if (lenwrit == -1) {
+		warnp("network_write send");
+		goto err0;
+	} else if (lenwrit != send->nchars) {
+		warnp("Mismatch between data sent: %zu, and data "
+		    "requested to send: %zu", send->nchars, lenwrit);
 		goto err0;
 	}
 
