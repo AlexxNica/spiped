@@ -35,6 +35,7 @@ static int
 callback_graceful_shutdown(void * dispatch_cookie)
 {
 
+	warn0("callback_graceful_shutdown");
 	dispatch_request_shutdown(dispatch_cookie);
 
 	/* Success! */
@@ -48,6 +49,7 @@ static void
 diediedie_handler(int signo)
 {
 
+	warn0("got SIGINT for hard shutdown");
 	(void)signo; /* UNUSED */
 	_exit(0);
 }
@@ -341,6 +343,7 @@ main(int argc, char * argv[])
 	free(opt_p);
 
 	/* Success! */
+	warn0("peaceful exit");
 	exit(0);
 
 err6:
@@ -357,5 +360,6 @@ err1:
 	free(opt_p);
 err0:
 	/* Failure! */
+	warn0("failure exit");
 	exit(1);
 }
