@@ -205,6 +205,7 @@ err2:
 	sock_addr_freelist(sas);
 err1:
 	A->nconn -= 1;
+	warn0("spiped displatch will close the socket");
 	close(s);
 err0:
 	/* Failure! */

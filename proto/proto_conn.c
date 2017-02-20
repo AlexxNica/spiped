@@ -10,6 +10,7 @@
 #include "events.h"
 #include "network.h"
 #include "sock.h"
+#include "warnp.h"
 
 #include "proto_handshake.h"
 #include "proto_pipe.h"
@@ -147,6 +148,7 @@ proto_conn_drop(void * conn_cookie)
 	int rc;
 
 	/* Close the incoming connection. */
+	warn0("spiped proto_conn_drop will close the socket");
 	close(C->s);
 
 	/* Close the outgoing connection if it is open. */
